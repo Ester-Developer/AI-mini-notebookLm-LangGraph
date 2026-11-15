@@ -1,0 +1,17 @@
+from functools import lru_cache
+
+from langchain.chat_models import init_chat_model
+
+MODELS = {
+    "planning": "anthropic:claude-haiku-5-5",   # plan_topic, design_personas, plan_lineup
+    "context": "anthropic:claude-haiku-5-5",    # gather_context
+    "writing": "anthropic:claude-sonnet-5-5",   # write_segment
+    "critique": "anthropic:claude-sonnet-5-5",  # critique_script, revise_script
+}
+
+
+@lru_cache
+def get_model(role: str):
+    # The lineup and full-episode outputs are long Hebrew JSON/prose; the
+    # provider's default output cap truncates them mid-object.
+    return init_chat_model(MODELS[role], max_tokens=16000)
